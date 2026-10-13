@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DriveEasy — Car Booking</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      color: #222;
+      line-height: 1.6;
+      background: #f7f9fc;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      color: white;
+      min-height: 60vh;
+      padding: 1.5rem 2rem;
+    }
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .logo { font-size: 1.5rem; font-weight: bold; }
+    .nav-links { display: flex; list-style: none; gap: 2rem; }
+    .nav-links a {
+      color: white; text-decoration: none; font-weight: 500; transition: opacity 0.2s;
+    }
+    .nav-links a:hover { opacity: 0.7; }
+    .hero-content { max-width: 1200px; margin: 6rem auto 0; text-align: center; }
+    .hero-content h1 { font-size: 3rem; margin-bottom: 1rem; }
+    .hero-content p { font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.95; }
+
+    .btn-primary {
+      display: inline-block;
+      background: #f59e0b;
+      color: white;
+      padding: 0.9rem 2rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-primary:hover { background: #d97706; transform: translateY(-2px); }
+
+    /* Sections */
+    .section { max-width: 1200px; margin: 0 auto; padding: 4rem 2rem; }
+    .section h2 { text-align: center; font-size: 2.2rem; margin-bottom: 0.5rem; }
+    .section-subtitle { text-align: center; color: #6b7280; margin-bottom: 3rem; }
+
+    /* Car Grid */
+    .car-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .car-card {
+      background: white;
+      border-radius: 14px;
+      padding: 1.8rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+      position: relative;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 2px solid transparent;
+    }
+    .car-card:hover { transform: translateY(-6px); box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1); }
+    .car-card.featured { border-color: #f59e0b; }
+    .badge {
+      position: absolute; top: -12px; right: 16px;
+      background: #f59e0b; color: white;
+      font-size: 0.75rem; padding: 0.3rem 0.8rem;
+      border-radius: 999px; font-weight: 600;
+    }
+    .car-icon { font-size: 3rem; text-align: center; margin-bottom: 1rem; }
+    .car-card h3 { text-align: center; font-size: 1.4rem; margin-bottom: 0.2rem; }
+    .car-model { text-align: center; font-size: 0.9rem; color: #6b7280; margin-bottom: 1rem; }
+    .features { list-style: none; margin-bottom: 1.2rem; }
+    .features li {
+      padding: 0.35rem 0; font-size: 0.9rem; color: #374151;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .features li:last-child { border-bottom: none; }
+    .price { text-align: center; font-size: 1rem; color: #6b7280; margin-bottom: 1rem; }
+    .price .amount { font-size: 1.8rem; font-weight: 700; color: #1e3a8a; }
+
+    .btn-book {
+      width: 100%; background: #1e3a8a; color: white;
+      border: none; padding: 0.8rem; border-radius: 8px;
+      font-size: 1rem; font-weight: 600; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-book:hover { background: #1e40af; }
+
+    /* Booking Form */
+    .booking-section { background: white; }
+    .booking-form {
+      max-width: 720px; margin: 0 auto;
+      background: #f9fafb; padding: 2rem;
+      border-radius: 14px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .form-group { display: flex; flex-direction: column; }
+    .form-group label {
+      font-size: 0.85rem; font-weight: 600;
+      margin-bottom: 0.4rem; color: #374151;
+    }
+    .form-group input, .form-group select {
+      padding: 0.7rem; border: 1px solid #d1d5db;
+      border-radius: 8px; font-size: 0.95rem;
+      font-family: inherit; background: white;
+    }
+    .form-group input:focus, .form-group select:focus {
+      outline: none; border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+    .total-display {
+      text-align: right; font-size: 1.1rem;
+      padding: 1rem 0; border-top: 2px dashed #d1d5db; margin-top: 1rem;
+    }
+    .total-display strong { color: #1e3a8a; font-size: 1.4rem; }
+    .btn-full { width: 100%; }
+
+    /* Confirmation */
+    .confirmation {
+      max-width: 720px; margin: 2rem auto 0;
+      background: #ecfdf5; border-left: 5px solid #10b981;
+      padding: 1.5rem; border-radius: 10px; color: #065f46;
+    }
+    .hidden { display: none; }
+
+    /* Footer */
+    .footer {
+      background: #111827; color: #d1d5db;
+      padding: 3rem 2rem 1.5rem; margin-top: 4rem;
+    }
+    .footer-content {
+      max-width: 1200px; margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+    .footer h4 { color: white; margin-bottom: 0.8rem; }
+    .copyright {
+      text-align: center; margin-top: 2rem;
+      font-size: 0.85rem; color: #6b7280;
+      border-top: 1px solid #374151; padding-top: 1rem;
+    }
+
+    @media (max-width: 640px) {
+      .hero-content h1 { font-size: 2rem; }
+      .form-row { grid-template-columns: 1fr; }
+      .nav-links { gap: 1rem; font-size: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="hero">
+    <nav class="navbar">
+      <div class="logo">🚗 DriveEasy</div>
+      <ul class="nav-links">
+        <li><a href="#fleet">Fleet</a></li>
+        <li><a href="#booking">Book</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="hero-content">
+      <h1>Book Your Perfect Ride</h1>
+      <p>Choose from a wide range of cars for every occasion and budget.</p>
+      <a href="#fleet" class="btn-primary">Browse Fleet</a>
+    </div>
+  </header>
+
+  <!-- Fleet -->
+  <section id="fleet" class="section">
+    <h2>Our Fleet</h2>
+    <p class="section-subtitle">All cars come with insurance, 24/7 support, and free cancellation.</p>
+
+    <div class="car-grid">
+      <div class="car-card">
+        <div class="car-icon">🚙</div>
+        <h3>Economy</h3>
+        <p class="car-model">Toyota Corolla or similar</p>
+        <ul class="features">
+          <li>👥 5 Seats</li>
+          <li>🧳 2 Bags</li>
+          <li>⛽ Petrol · Manual/Auto</li>
+          <li>❄️ Air Conditioning</li>
+          <li>📻 Bluetooth Audio</li>
+        </ul>
+        <div class="price"><span class="amount">$29</span> / day</div>
+        <button class="btn-book" onclick="bookCar('Economy')">Book Now</button>
+      </div>
+
+      <div class="car-card">
+        <div class="car-icon">🚗</div>
+        <h3>Compact</h3>
+        <p class="car-model">Volkswagen Golf or similar</p>
+        <ul class="features">
+          <li>👥 5 Seats</li>
+          <li>🧳 3 Bags</li>
+          <li>⛽ Petrol · Automatic</li>
+          <li>❄️ Air Conditioning</li>
+          <li>🅿️ Rear Parking Sensors</li>
+        </ul>
+        <div class="price"><span class="amount">$39</span> / day</div>
+        <button class="btn-book" onclick="bookCar('Compact')">Book Now</button>
+      </div>
+
+      <div class="car-card">
+        <div class="car-icon">🚘</div>
+        <h3>Sedan</h3>
+        <p class="car-model">Honda Accord or similar</p>
+        <ul class="features">
+          <li>👥 5 Seats</li>
+          <li>🧳 4 Bags</li>
+          <li>⛽ Petrol · Automatic</li>
+          <li>❄️ Dual-Zone Climate</li>
+          <li>📱 CarPlay / Android Auto</li>
+        </ul>
+        <div class="price"><span class="amount">$49</span> / day</div>
+        <button class="btn-book" onclick="bookCar('Sedan')">Book Now</button>
+      </div>
+
+      <div class="car-card featured">
+        <div class="badge">Most Popular</div>
+        <div class="car-icon">🚐</div>
+        <h3>SUV</h3>
+        <p class="car-model">Toyota RAV4 or similar</p>
+        <ul class="features">
+          <li>👥 7 Seats</li>
+          <li>🧳 5 Bags</li>
+          <li>⛽ Hybrid · Automatic</li>
+          <li>❄️ Climate Control</li>
+          <li>🛣️ Adaptive Cruise Control</li>
+        </ul>
+        <div class="price"><span class="amount">$69</span> / day</div>
+        <button class="btn-book" onclick="bookCar('SUV')">Book Now</button>
+      </div>
+
+      <div class="car-card">
+        <div class="car-icon">🏎️</div>
+        <h3>Luxury</h3>
+        <p class="car-model">BMW 5 Series or similar</p>
+        <ul class="features">
+          <li>👥 5 Seats</li>
+          <li>🧳 4 Bags</li>
+          <li>⛽ Petrol · Automatic</li>
+          <li>🪑 Leather Heated Seats</li>
+          <li>🔊 Premium Sound System</li>
+        </ul>
+        <div class="price"><span class="amount">$99</span> / day</div>
+        <button class="btn-book" onclick="bookCar('Luxury')">Book Now</button>
+      </div>
+
+      <div class="car-card">
+        <div class="car-icon">⚡</div>
+        <h3>Electric</h3>
+        <p class="car-model">Tesla Model 3 or similar</p>
+        <ul class="features">
+          <li>👥 5 Seats</li>
+          <li>🧳 3 Bags</li>
+          <li>🔌 Electric · 350mi Range</li>
+          <li>🖥️ Autopilot</li>
+          <li>🔋 Free Charging Included</li>
+        </ul>
+        <div class="price"><span class="amount">$89</span> / day</div>
+        <button class="btn-book" onclick="bookCar('Electric')">Book Now</button>
+      </div>
+
+      <div class="car-card">
+        <div class="car-icon">🚌</div>
+        <h3>Van / Minibus</h3>
+        <p class="car-model">Mercedes Vito or similar</p>
+        <ul class="features">
+          <li>👥 9 Seats</li>
+          <li>🧳 8 Bags</li>
+          <li>⛽ Diesel · Manual</li>
+          <li>❄️ Air Conditioning</li>
+          <li>🚪 Sliding Doors</li>
+        </ul>
+        <div class="price"><span class="amount">$119</span> / day</div>
+        <button class="btn-book" onclick="bookCar('Van')">Book Now</button>
+      </div>
+
+      <div class="car-card">
+        <div class="car-icon">🏁</div>
+        <h3>Sports</h3>
+        <p class="car-model">Ford Mustang or similar</p>
+        <ul class="features">
+          <li>👥 2 Seats</li>
+          <li>🧳 1 Bag</li>
+          <li>⛽ Petrol · Automatic</li>
+          <li>🏁 0–60 in 4.5s</li>
+          <li>🎵 Sport Exhaust</li>
+        </ul>
+        <div class="price"><span class="amount">$149</span> / day</div>
+        <button class="btn-book" onclick="bookCar('Sports')">Book Now</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Booking -->
+  <section id="booking" class="section booking-section">
+    <h2>Book Your Car</h2>
+
+    <form id="bookingForm" class="booking-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" required placeholder="John Doe" />
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" required placeholder="john@example.com" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="pickup">Pick-up Date</label>
+          <input type="date" id="pickup" required />
+        </div>
+        <div class="form-group">
+          <label for="return">Return Date</label>
+          <input type="date" id="return" required />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="carType">Car Type</label>
+          <select id="carType" required>
+            <option value="">Select a car</option>
+            <option value="Economy"  data-price="29">Economy — $29/day</option>
+            <option value="Compact"  data-price="39">Compact — $39/day</option>
+            <option value="Sedan"    data-price="49">Sedan — $49/day</option>
+            <option value="SUV"      data-price="69">SUV — $69/day</option>
+            <option value="Luxury"   data-price="99">Luxury — $99/day</option>
+            <option value="Electric" data-price="89">Electric — $89/day</option>
+            <option value="Van"      data-price="119">Van — $119/day</option>
+            <option value="Sports"   data-price="149">Sports — $149/day</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="location">Pick-up Location</label>
+          <select id="location" required>
+            <option value="">Choose location</option>
+            <option>Airport Terminal 1</option>
+            <option>Airport Terminal 2</option>
+            <option>Downtown Branch</option>
+            <option>Central Station</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="total-display">
+        Estimated Total: <strong id="totalPrice">$0</strong>
+      </div>
+
+      <button type="submit" class="btn-primary btn-full">Confirm Booking</button>
+    </form>
+
+    <div id="confirmation" class="confirmation hidden"></div>
+  </section>
+
+  <!-- Footer -->
+  <footer id="contact" class="footer">
+    <div class="footer-content">
+      <div>
+        <h4>🚗 DriveEasy</h4>
+        <p>Your trusted car rental partner since 2010.</p>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p>📞 +1 (555) 123-4567</p>
+        <p>✉️ hello@driveeasy.com</p>
+      </div>
+      <div>
+        <h4>Hours</h4>
+        <p>Mon–Fri: 8am – 8pm</p>
+        <p>Sat–Sun: 9am – 6pm</p>
+      </div>
+    </div>
+    <p class="copyright">© 2025 DriveEasy. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const DAY_MS = 1000 * 60 * 60 * 24;
+
+    function bookCar(carType) {
+      document.getElementById('carType').value = carType;
+      updateTotal();
+      document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function updateTotal() {
+      const pickup = document.getElementById('pickup').value;
+      const returnDate = document.getElementById('return').value;
+      const carSelect = document.getElementById('carType');
+      const pricePerDay = Number(carSelect.selectedOptions[0]?.dataset.price || 0);
+
+      if (pickup && returnDate && pricePerDay) {
+        const days = Math.max(1, Math.round((new Date(returnDate) - new Date(pickup)) / DAY_MS));
+        document.getElementById('totalPrice').textContent =
+          `$${days * pricePerDay} (${days} day${days > 1 ? 's' : ''})`;
+      } else {
+        document.getElementById('totalPrice').textContent = '$0';
+      }
+    }
+
+    ['pickup', 'return', 'carType'].forEach((id) => {
+      document.getElementById(id).addEventListener('change', updateTotal);
+    });
+
+    document.getElementById('bookingForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const pickup = document.getElementById('pickup').value;
+      const returnDate = document.getElementById('return').value;
+      const carType = document.getElementById('carType').value;
+      const location = document.getElementById('location').value;
+      const pricePerDay = Number(document.getElementById('carType').selectedOptions[0].dataset.price);
+      const days = Math.max(1, Math.round((new Date(returnDate) - new Date(pickup)) / DAY_MS));
+      const total = days * pricePerDay;
+
+      const confirmation = document.getElementById('confirmation');
+      confirmation.classList.remove('hidden');
+      confirmation.innerHTML = `
+        <h3>✅ Booking Confirmed!</h3>
+        <p>Thank you, <strong>${name}</strong>. A confirmation has been sent to <strong>${email}</strong>.</p>
+        <ul style="margin-top:0.8rem; padding-left:1.2rem;">
+          <li><strong>Car:</strong> ${carType}</li>
+          <li><strong>Pick-up:</strong> ${pickup} at ${location}</li>
+          <li><strong>Return:</strong> ${returnDate}</li>
+          <li><strong>Duration:</strong> ${days} day${days > 1 ? 's' : ''}</li>
+          <li><strong>Total:</strong> $${total}</li>
+        </ul>
+      `;
+
+      confirmation.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      e.target.reset();
+      updateTotal();
+    });
+
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('pickup').setAttribute('min', today);
+    document.getElementById('return').setAttribute('min', today);
+  </script>
+</body>
+</html>
