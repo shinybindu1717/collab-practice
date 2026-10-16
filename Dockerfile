@@ -1,4 +1,4 @@
-FROM nginx:alpine-22
+FROM nginx
 RUN rm -rf /usr/share/nginx/html
 COPY index.html .
 COPY . .
